@@ -61,8 +61,21 @@ class DemoCodeGenerator(object):
 	def allocVar(self,name = None):
 		addr = self.pc
 		self.pc += self.getWordSize()
-		print("${0:06x}  ds    ${1:04x} ; {2}".format(addr,count,"" if name is None else name))
+		print("${0:06x}  dw    $0000 ; {1}".format(addr,"" if name is None else name))
 		return addr
+	#
+	#		Load parameter constant/variable to a temporary area,
+	#
+	def loadParamRegister(self,regNumber,isConstant,value):
+		toLoad = "#${0:04x}" if isConstant else "(${0:04x})" 
+		print("${0:06x}  ldr   r{1},{2}".format(self.pc,regNumber,toLoad.format(value)))
+		self.pc += 1
+	#
+	#		Copy parameter to an actual variable
+	#
+	def storeParamRegister(self,regNumber,address):
+		print("${0:06x}  str   r{1},(${2:04x})".format(self.pc,regNumber,address))
+		self.pc += 1
 	#
 	#		Create a string constant (done outside procedures)
 	#
