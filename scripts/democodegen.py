@@ -38,10 +38,18 @@ class DemoCodeGenerator(object):
 	#		Do a binary operation on a constant or variable on the accumulator
 	#
 	def binaryOperation(self,operator,isConstant,value):
-		if operator == "!" or operator == "?":
+		if operator == "!":
 			self.binaryOperation("+",isConstant,value)
-			print("${0:06x}  lda.{1} [a]".format(self.pc,"b" if operator == "?" else "w"))
+			print("${0:06x}  lda.w [a]".format(self.pc))
 			self.pc += 1
+		elif operator == ">":
+			if isConstant:
+				print("${0:06x}  sta   (${1:04x})".format(self.pc,value))
+				self.pc += 2
+			else:
+				print("${0:06x}  lda   (${1:04x})".format(self.pc,value))
+				print("${0:06x}  sta.w [x]\n".format(self.pc+1))
+				self.pc += 2
 		else:					
 			src = ("#${0:04x}" if isConstant else "(${0:04x})").format(value)
 			print("${0:06x}  {1}   {2}".format(self.pc,self.ops[operator],src))
